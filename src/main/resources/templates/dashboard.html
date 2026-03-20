@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Scheduler Dashboard</title>
+
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 30px;
+        }
+
+        h2{
+            margin-bottom: 10px;
+        }
+
+        .topbar{
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .badge{
+            background: black;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 3px 8px rgba(0,0,0,0.1);
+        }
+
+        th{
+            background: #222;
+            color: white;
+            padding: 12px;
+        }
+
+        td{
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover{
+            background: #f1f1f1;
+        }
+
+        .SUCCESS{ background: #d4edda; }
+        .FAILED{ background: #f8d7da; }
+        .RUNNING{ background: #fff3cd; }
+        .SCHEDULED{ background: #d1ecf1; }
+
+        .footer{
+            margin-top: 15px;
+            font-size: 12px;
+            color: gray;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <h2>🚀 Scheduler Dashboard</h2>
+    <div class="badge" id="lastRefresh">Refreshing...</div>
+</div>
+
+<div class="badge" id="jobCount">Jobs: 0</div>
+
+<br>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Next Run Time</th>
+    </tr>
+    </thead>
+
+    <tbody id="jobTable"></tbody>
+</table>
+
+<div class="footer">
+    Auto refresh every 3 seconds
+</div>
+
+<script>
+
+    async function loadJobs(){
+
+        try{
+
+            let response = await fetch("/api/jobs");
+            let jobs = await response.json();
+
+            let html = "";
+
+            jobs.forEach(j => {
+
+                html += `
+                <tr class="${j.status}">
+                    <td>${j.id}</td>
+                    <td>${j.name}</td>
+                    <td>${j.status}</td>
+                    <td>${j.jobType}</td>
+                    <td>${j.nextRunTime ?? ""}</td>
+                </tr>`;
+            });
+
+            document.getElementById("jobTable").innerHTML = html;
+
+            document.getElementById("jobCount").innerText =
+                "Jobs: " + jobs.length;
+
+            document.getElementById("lastRefresh").innerText =
+                "Last Refresh: " + new Date().toLocaleTimeString();
+
+        }catch(e){
+            document.getElementById("lastRefresh").innerText =
+                "Server unreachable";
+        }
+    }
+
+    setInterval(loadJobs, 3000);
+    loadJobs();
+
+</script>
+
+</body>
+</html>
