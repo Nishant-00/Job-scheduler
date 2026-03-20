@@ -2,9 +2,12 @@ package com.scheduler.scheduler_service.controller;
 
 import com.scheduler.scheduler_service.entity.Job;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import com.scheduler.scheduler_service.service.JobService;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 @RestController
@@ -23,6 +26,17 @@ public class JobController {
     public List<Job> getAll(){
         return jobService.getAllJobs();
     }
+
+    @Value("${INSTANCE_NAME:UNKNOWN}")
+    private String instanceName;
+
+    @GetMapping("/whoami")
+    public String whoami(){
+        return "Handled by instance: " + instanceName;
+    }
+
+
+
 }
 
 //
