@@ -18,7 +18,7 @@ This project implements a **lightweight job scheduler engine** that stores jobs 
 ---
 
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 * Java
 * Spring Boot
